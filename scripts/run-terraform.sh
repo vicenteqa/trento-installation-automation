@@ -53,6 +53,17 @@ done < "$ENV_FILE"
 
 echo "✅ Environment variables loaded. Running: terraform $*" >> "$LOG_FILE"
 
+# --- SET ARM_SUBSCRIPTION_ID FROM AZURE CLI ---
+echo "🔑 Setting ARM_SUBSCRIPTION_ID from Azure CLI..." >> "$LOG_FILE"
+ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv 2>>"$LOG_FILE")
+if [ -z "$ARM_SUBSCRIPTION_ID" ]; then
+    echo "❌ Error: Could not retrieve subscription ID from Azure CLI" >&2
+    echo "ERROR: Failed to get subscription ID from 'az account show'" >> "$LOG_FILE"
+    exit 1
+fi
+export ARM_SUBSCRIPTION_ID
+echo "✅ ARM_SUBSCRIPTION_ID set to: $ARM_SUBSCRIPTION_ID" >> "$LOG_FILE"
+
 # --- TERRAFORM EXECUTION ---
 # Execute Terraform in a sub-shell to redirect all output and capture exit code
 # Temporarily disable exit-on-error to capture the exit code
