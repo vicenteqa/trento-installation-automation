@@ -48,7 +48,6 @@ stages:
                 echo "##vso[task.setvariable variable=TF_VAR_azure_resource_group]$(AZURE_RESOURCE_GROUP)"
                 echo "##vso[task.setvariable variable=TF_VAR_azure_vms_location]$(AZURE_VMS_LOCATION)"
                 echo "##vso[task.setvariable variable=TF_VAR_azure_owner_tag]$(AZURE_OWNER_TAG)"
-                echo "##vso[task.setvariable variable=TF_VAR_ssh_public_key_content]$(SSH_PUBLIC_KEY_CONTENT)"
                 echo "##vso[task.setvariable variable=TF_VAR_ssh_user]$(SSH_USER)"
 
                 echo "Terraform variables exported successfully"
@@ -94,7 +93,6 @@ stages:
                 export TF_VAR_azure_resource_group="$(AZURE_RESOURCE_GROUP)"
                 export TF_VAR_azure_vms_location="$(AZURE_VMS_LOCATION)"
                 export TF_VAR_azure_owner_tag="$(AZURE_OWNER_TAG)"
-                export TF_VAR_ssh_public_key_content="$(SSH_PUBLIC_KEY_CONTENT)"
                 export TF_VAR_ssh_user="$(SSH_USER)"
 
                 # Apply Terraform configuration

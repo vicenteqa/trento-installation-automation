@@ -7,11 +7,6 @@ variable "azure_vms_location" {
   type        = string
 }
 
-variable "ssh_public_key_content" {
-  type        = string
-  description = "Public key content"
-}
-
 variable "ssh_user" {
   type        = string
   description = "SSH user"

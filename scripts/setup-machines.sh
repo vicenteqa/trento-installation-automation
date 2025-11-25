@@ -47,6 +47,15 @@ set +a
 
 DOMAIN_SUFFIX="${AZURE_VMS_LOCATION}.cloudapp.azure.com"
 
+# --- GET SSH KEY PATH FROM TERRAFORM OUTPUT ---
+echo "🔑 Retrieving SSH key path from Terraform..." >&2
+SSH_PRIVATE_KEY_PATH=$(terraform -chdir="$PROJECT_ROOT/terraform" output -raw ssh_private_key_path 2>/dev/null)
+if [ -z "$SSH_PRIVATE_KEY_PATH" ]; then
+    echo "❌ Error: Could not retrieve SSH private key path from Terraform output" >&2
+    exit 1
+fi
+echo "✅ Using SSH key: $SSH_PRIVATE_KEY_PATH" >&2
+
 # --- VALIDATE MACHINES FILE ---
 if [ ! -f "$MACHINES_CSV" ]; then
     echo "❌ Error: Machines configuration file not found at $MACHINES_CSV" >&2
