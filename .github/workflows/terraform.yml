@@ -38,29 +38,19 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set Azure Subscription ID
-        run: |
-          SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-          echo "ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_ENV
-          echo "Azure Subscription ID: $SUBSCRIPTION_ID"
+      - name: Setup Azure Credentials
+        uses: ./.github/actions/setup-azure-credentials
+        with:
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group-fallback: ${{ secrets.AZURE_RESOURCE_GROUP }}
 
       - name: Terraform Init
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
         run: terraform init
 
       - name: Terraform Plan
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_azure_resource_group: ${{ secrets.AZURE_RESOURCE_GROUP }}
           TF_VAR_azure_vms_location: ${{ secrets.AZURE_VMS_LOCATION }}
           TF_VAR_azure_owner_tag: ${{ secrets.AZURE_OWNER_TAG }}
           TF_VAR_ssh_user: ${{ secrets.SSH_USER }}
@@ -69,11 +59,6 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_azure_resource_group: ${{ secrets.AZURE_RESOURCE_GROUP }}
           TF_VAR_azure_vms_location: ${{ secrets.AZURE_VMS_LOCATION }}
           TF_VAR_azure_owner_tag: ${{ secrets.AZURE_OWNER_TAG }}
           TF_VAR_ssh_user: ${{ secrets.SSH_USER }}

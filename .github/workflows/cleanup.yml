@@ -20,20 +20,26 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Setup Azure Credentials
+        uses: ./.github/actions/setup-azure-credentials
+        with:
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group-fallback: ${{ secrets.AZURE_RESOURCE_GROUP }}
+
       - name: Verify Resource Group Existence
         run: |
           echo "Verifying resource group existence..."
-          if ! az group show --name "${{ secrets.AZURE_RESOURCE_GROUP }}" --output none; then
-            echo "❌ Error: Resource group '${{ secrets.AZURE_RESOURCE_GROUP }}' does not exist or access denied"
+          if ! az group show --name "$AZURE_RESOURCE_GROUP" --output none; then
+            echo "❌ Error: Resource group '$AZURE_RESOURCE_GROUP' does not exist or access denied"
             exit 1
           fi
-          echo "✅ Resource group '${{ secrets.AZURE_RESOURCE_GROUP }}' verified"
+          echo "✅ Resource group '$AZURE_RESOURCE_GROUP' verified"
 
       - name: Cleanup VMs and Dependencies
         run: |
           set -euo pipefail
 
-          RESOURCE_GROUP_NAME="${{ secrets.AZURE_RESOURCE_GROUP }}"
+          RESOURCE_GROUP_NAME="$AZURE_RESOURCE_GROUP"
           MAX_DELETION_PASSES=3
           CURRENT_PASS=0
 
@@ -111,7 +117,7 @@ jobs:
         if: always()
         run: |
           echo "Cleanup workflow completed at $(date)" > ${{ env.LOGS_DIR }}/cleanup-summary.txt
-          echo "Resource Group: ${{ secrets.AZURE_RESOURCE_GROUP }}" >> ${{ env.LOGS_DIR }}/cleanup-summary.txt
+          echo "Resource Group: $AZURE_RESOURCE_GROUP" >> ${{ env.LOGS_DIR }}/cleanup-summary.txt
           echo "Triggered by: ${{ github.actor }}" >> ${{ env.LOGS_DIR }}/cleanup-summary.txt
 
       - name: Upload Logs
