@@ -81,7 +81,10 @@ jobs:
             # Delete remaining resources
             echo "Deleting remaining dependencies..."
             if [ -n "$REMAINING_RESOURCE_IDS" ]; then
-              echo "$REMAINING_RESOURCE_IDS" | xargs -n 1 -I {} az resource delete --ids {} --no-wait
+              while IFS= read -r RESOURCE_ID; do
+                echo "  - Deleting resource: $RESOURCE_ID"
+                az resource delete --ids "$RESOURCE_ID" --no-wait || true
+              done <<< "$REMAINING_RESOURCE_IDS"
             fi
 
             echo "Deletions initiated. Waiting 5 seconds before next pass..."
