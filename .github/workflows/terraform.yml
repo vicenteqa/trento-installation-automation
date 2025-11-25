@@ -20,6 +20,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Create Machine Configuration
+        run: |
+          cat > .machines.conf.csv << 'EOF'
+          prefix,slesVersion,spVersion,suffix
+          sles,15,4,rpm
+          EOF
+          cat .machines.conf.csv
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
